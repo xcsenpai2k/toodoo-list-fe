@@ -67,8 +67,8 @@ const undo = () => {
 };
 
 const removeTask = () => {
-  if(confirm("Are you sure ?")){
-    emit('removed', props.task);
+  if (confirm("Are you sure ?")) {
+    emit("removed", props.task);
   }
 };
 </script>
