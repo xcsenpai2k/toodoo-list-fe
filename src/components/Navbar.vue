@@ -1,10 +1,10 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
     <div class="container py-2">
-      <a href="#" class="navbar-brand">
+      <router-link :to="{ name: 'home' }" class="navbar-brand">
         <span>Toodoo</span>
         <strong>List</strong>
-      </a>
+      </router-link>
       <button
         class="navbar-toggler"
         type="button"
@@ -17,7 +17,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav" v-if="store.isLoggedIn">
           <li class="nav-item">
             <router-link :to="{ name: 'tasks' }" class="nav-link"
               >Tasks</router-link
@@ -30,26 +30,74 @@
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <router-link
-              :to="{ name: 'login' }"
-              class="btn btn-outline-secondary ms-2"
-              >Login
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link :to="{ name: 'register' }" class="btn btn-danger ms-2"
-              >Register
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="btn btn-outline-secondary ms-2">Logout</a>
-          </li>
+          <template v-if="!store.isLoggedIn">
+            <li class="nav-item">
+              <router-link
+                :to="{ name: 'login' }"
+                class="btn btn-outline-secondary ms-2"
+                >Login
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link
+                :to="{ name: 'register' }"
+                class="btn btn-danger ms-2"
+                >Register
+              </router-link>
+            </li>
+          </template>
+          <template v-else>
+            <!-- <li class="nav-item">
+              
+            </li> -->
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                :class="toggleClass"
+                @click.prevent="toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                {{ store.user.name }}
+              </a>
+              <ul class="dropdown-menu show" :class="toggleClass">
+                <li>
+                  <a href="#" class="dropdown-item" @click.prevent="logout"
+                    >Logout</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </template>
         </ul>
       </div>
     </div>
   </nav>
 </template>
+
+<script setup>
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
+
+const store = useAuthStore();
+const routers = useRouter();
+const isOpen = ref(false);
+
+const logout = async () => {
+  await store.handleLogout();
+  isOpen.value = false;
+  routers.push({ name: "login" });
+};
+
+const toggle = () => (isOpen.value = !isOpen.value);
+
+const toggleClass = computed(() => (isOpen.value === true ? "show" : ""));
+</script>
 
 <style scoped>
 .nav-link.router-link-active {
