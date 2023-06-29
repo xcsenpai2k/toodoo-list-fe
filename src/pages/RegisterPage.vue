@@ -10,35 +10,35 @@
         <input
           type="text"
           class="form-control"
-          :class="{ 'is-invalid': errors.name && errors.name[0] }"
+          :class="{ 'is-invalid': errors?.name && errors?.name[0] }"
           id="name"
           v-model="form.name"
           placeholder="Your name"
         />
         <label for="name">Name</label>
-        <div class="invalid-feedback" v-if="errors.name && errors.name[0]">
-          {{ errors.name && errors.name[0] }}
+        <div class="invalid-feedback" v-if="errors?.name && errors?.name[0]">
+          {{ errors?.name && errors?.name[0] }}
         </div>
       </div>
       <div class="form-floating mb-2">
         <input
           type="email"
           class="form-control"
-          :class="{ 'is-invalid': errors.email && errors.email[0] }"
+          :class="{ 'is-invalid': errors?.email && errors?.email[0] }"
           id="email"
           v-model="form.email"
           placeholder="name@example.com"
         />
         <label for="email">Email</label>
-        <div class="invalid-feedback" v-if="errors.email && errors.email[0]">
-          {{ errors.email && errors.email[0] }}
+        <div class="invalid-feedback" v-if="errors?.email && errors?.email[0]">
+          {{ errors?.email && errors?.email[0] }}
         </div>
       </div>
       <div class="form-floating mb-3">
         <input
           type="password"
           class="form-control"
-          :class="{ 'is-invalid': errors.password && errors.password[0] }"
+          :class="{ 'is-invalid': errors?.password && errors?.password[0] }"
           id="password"
           v-model="form.password"
           placeholder="Password"
@@ -46,9 +46,9 @@
         <label for="password">Password</label>
         <div
           class="invalid-feedback"
-          v-if="errors.password && errors.password[0]"
+          v-if="errors?.password && errors?.password[0]"
         >
-          {{ errors.password && errors.password[0] }}
+          {{ errors?.password && errors?.password[0] }}
         </div>
       </div>
       <div class="form-floating mb-3">
@@ -70,16 +70,17 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 
 const router = useRouter();
 const store = useAuthStore();
-const { isLoggedIn, errors } = storeToRefs(store);
+const { isAuthenticated } = storeToRefs(store);
 const { handleRegister } = store;
 
+const errors = computed(() => store.errors);
 const form = reactive({
   name: "",
   email: "",
@@ -89,7 +90,7 @@ const form = reactive({
 
 const handleSubmit = async () => {
   await handleRegister(form);
-  if (isLoggedIn.value) {
+  if (isAuthenticated) {
     router.push({ name: "tasks" });
   }
 };

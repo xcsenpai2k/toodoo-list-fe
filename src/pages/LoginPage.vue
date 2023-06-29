@@ -10,21 +10,21 @@
         <input
           type="email"
           class="form-control"
-          :class="{ 'is-valid': errors.email && errors.email[0] }"
+          :class="{ 'is-invalid': errors?.email && errors?.email[0] }"
           id="email"
           v-model="form.email"
           placeholder="name@example.com"
         />
         <label for="email">Email</label>
-        <div class="invalid-feedback" v-if="errors.email && errors.email[0]">
-          {{ errors.email && errors.email[0] }}
+        <div class="invalid-feedback" v-if="errors?.email && errors?.email[0]">
+          {{ errors?.email && errors?.email[0] }}
         </div>
       </div>
       <div class="form-floating mb-3">
         <input
           type="password"
           class="form-control"
-          :class="{ 'is-valid': errors.password && errors.password[0] }"
+          :class="{ 'is-invalid': errors?.password && errors?.password[0] }"
           id="password"
           v-model="form.password"
           placeholder="Password"
@@ -32,9 +32,9 @@
         <label for="password">Password</label>
         <div
           class="invalid-feedback"
-          v-if="errors.password && errors.password[0]"
+          v-if="errors?.password && errors?.password[0]"
         >
-          {{ errors.password && errors.password[0] }}
+          {{ errors?.password && errors?.password[0] }}
         </div>
       </div>
 
@@ -44,27 +44,28 @@
     </form>
   </main>
 </template>
+
 <script setup>
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
+import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
-import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const store = useAuthStore();
-const { isLoggedIn, errors } = storeToRefs(store);
-const { handleLogin } = store;
+const { isAuthenticated } = storeToRefs(store);
+const { login } = store;
 
+const errors = computed(() => store.errors);
 const form = reactive({
   email: "",
   password: "",
 });
 
 const handleSubmit = async () => {
-  await handleLogin(form);
-  if (isLoggedIn.value) {
+  await login(form);
+  if (isAuthenticated) {
     router.push({ name: "tasks" });
-  } else {
   }
 };
 </script>
